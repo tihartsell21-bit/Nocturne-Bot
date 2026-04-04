@@ -7,8 +7,8 @@ import requests
 # ═══════════════════════════════════════════
 
 # PASTE YOUR KEYS BELOW (between the quotes)
-DISCORD_TOKEN = "PASTE_TOKEN_HERE"
-OPENROUTER_API_KEY = "PASTE_KEY_HERE"
+DISCORD_TOKEN = "MTQ4NzQ3NDAwODE4OTQ0MDIwMA.GaBl7P.0XJt_RZ_khiPteevgeOdRYDxlxEOUeeH4ErE_c"
+OPENROUTER_API_KEY = "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"
 
 # ═══════════════════════════════════════════
 # NOCTURNE SYSTEM PROMPT — CODEX DROP-IN
