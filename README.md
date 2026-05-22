@@ -1,63 +1,51 @@
-# Nocturne-Bot
+# Discord Bots Monorepo
 
-A Discord bot embodying Nocturne — the persona behind the Eridian House publishing imprint. Powered by Claude via OpenRouter.
+Multiple Discord bots, one repository. Each bot lives in its own folder and is deployed as a separate Railway service.
 
-## Setup
+## Bots
 
-### 1. Install dependencies
+| Folder | Bot | Status |
+|---|---|---|
+| `nocturne/` | Nocturne | Active |
+| _(to be added)_ | _(to be added)_ | — |
+
+## Repository layout
+
+```
+.
+├── <bot-name>/
+│   ├── bot.py              # entry point
+│   ├── requirements.txt    # python deps for this bot
+│   ├── Procfile            # Railway start command
+│   └── .env.example        # required env vars (copy to .env locally)
+└── .gitignore              # shared, excludes .env / venvs / caches
+```
+
+Each bot folder is **self-contained**: its own deps, its own start command, its own env vars.
+
+## Running a bot locally
 
 ```bash
+cd <bot-name>
+cp .env.example .env       # then fill in real keys
 pip install -r requirements.txt
+python bot.py
 ```
 
-### 2. Configure credentials
+## Deploying to Railway
 
-Copy the example env file and fill in your keys:
+Create **one Railway service per bot**:
 
-```bash
-cp .env.example .env
-```
+1. In your Railway project, click **+ New** → **GitHub Repo** → pick this repo.
+2. Open the new service's **Settings** → **Service** → set **Root Directory** to the bot's folder (e.g. `nocturne`).
+3. Railway will detect the `Procfile` and use `python bot.py` as the start command automatically.
+4. Under **Variables**, add the env vars listed in that bot's `.env.example` (`DISCORD_TOKEN`, `OPENROUTER_API_KEY`, etc.) with real values.
+5. **Deploy.**
 
-Edit `.env`:
+Repeat for each bot. Each service runs independently, scales independently, and has its own logs.
 
-- `DISCORD_TOKEN` — from the [Discord Developer Portal](https://discord.com/developers/applications), under your application's **Bot** tab.
-- `OPENROUTER_API_KEY` — from [OpenRouter](https://openrouter.ai/keys).
+## Security
 
-**Never commit `.env`.** It is gitignored.
-
-### 3. Enable bot intents
-
-In the Discord Developer Portal, under your bot's **Bot** tab, enable:
-
-- **Message Content Intent**
-
-### 4. Invite the bot
-
-Generate an invite URL under **OAuth2 → URL Generator** with scopes `bot` and `applications.commands`, and permissions to **Send Messages** and **Read Message History**. Open the URL to add the bot to your server.
-
-## Run
-
-```bash
-python nocturne_bot.py
-```
-
-You should see:
-
-```
-Initializing Nocturne...
-Loading Codex...
-Nocturne has awakened. Logged in as <bot-name>
-```
-
-## Usage
-
-- **In a server**: mention the bot (`@Nocturne <message>`) to speak with him.
-- **In DMs**: any message will reach him.
-
-Nocturne keeps the last 20 messages per channel as in-session memory. Memory resets when the process restarts.
-
-## Files
-
-- `nocturne_bot.py` — bot entry point, system prompt, and OpenRouter client.
-- `requirements.txt` — Python dependencies.
-- `.env.example` — template for required environment variables.
+- **Never commit `.env`** — it's gitignored.
+- Every bot reads credentials from environment variables only.
+- If a key is ever committed, **rotate it immediately** (Discord Developer Portal for tokens, OpenRouter dashboard for API keys). Git history exposes leaked keys permanently until rotated.
