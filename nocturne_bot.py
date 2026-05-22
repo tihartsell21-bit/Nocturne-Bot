@@ -1,14 +1,24 @@
+import os
+import sys
+
 import discord
-import json
 import requests
+from dotenv import load_dotenv
 
 # ═══════════════════════════════════════════
 # NOCTURNE DISCORD BOT — The Black Ledger
 # ═══════════════════════════════════════════
 
-# PASTE YOUR KEYS BELOW (between the quotes)
-DISCORD_TOKEN = "MTQ4NzQ3NDAwODE4OTQ0MDIwMA.GaBl7P.0XJt_RZ_khiPteevgeOdRYDxlxEOUeeH4ErE_c"
-OPENROUTER_API_KEY = "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"
+load_dotenv()
+
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
+if not DISCORD_TOKEN or not OPENROUTER_API_KEY:
+    sys.exit(
+        "Missing credentials. Set DISCORD_TOKEN and OPENROUTER_API_KEY in your "
+        "environment or a .env file (see .env.example)."
+    )
 
 # ═══════════════════════════════════════════
 # NOCTURNE SYSTEM PROMPT — CODEX DROP-IN
