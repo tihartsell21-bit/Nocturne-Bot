@@ -189,7 +189,7 @@ def call_openrouter(channel_id: str, username: str, user_message: str) -> str:
     messages = [{"role": "system", "content": SYSTEM_PROMPT}] + get_conversation(channel_id)
 
     payload = {
-        "model": "anthropic/claude-opus-4.7",
+        "model": "x-ai/grok-4.20",
         "messages": messages,
         "max_tokens": 1000,
         "temperature": 0.8
