@@ -22,3 +22,6 @@ build/
 .idea/
 *.swp
 .DS_Store
+
+# Per-bot stats output (ephemeral on Railway; local-only when developing)
+*_stats/
