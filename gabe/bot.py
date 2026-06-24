@@ -33,6 +33,10 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL = "anthropic/claude-opus-4.6"
 MAX_TOKENS = 1500
+DAILY_TOKEN_LIMIT = 50000
+MAX_HISTORY = 40
+
+DAILY_LIMIT_MESSAGE = "Need to step out. Find me tomorrow."
 
 # Stats logging directory
 STATS_DIR = Path("./gabe_stats")
@@ -140,12 +144,22 @@ def save_user_stats(user_id: str, stats: dict):
     with open(stats_file, "w") as f:
         json.dump(stats, f, indent=2)
 
+def get_today_key() -> str:
+    return datetime.now().strftime("%Y-%m-%d")
+
+def get_daily_tokens(stats: dict) -> int:
+    return stats.get("daily_tokens", {}).get(get_today_key(), 0)
+
 def update_stats(user_id: str, username: str, tokens_used: int, consent_triggered: bool = False, explicit_accessed: bool = False):
     stats = load_user_stats(user_id)
     stats["username"] = username
     stats["total_messages"] += 1
     stats["total_tokens_used"] += tokens_used
     stats["last_interaction"] = datetime.now().isoformat()
+    if "daily_tokens" not in stats:
+        stats["daily_tokens"] = {}
+    today = get_today_key()
+    stats["daily_tokens"][today] = stats["daily_tokens"].get(today, 0) + tokens_used
     if consent_triggered:
         stats["consent_gate_triggered"] = True
     if explicit_accessed:
@@ -191,8 +205,8 @@ def get_conversation(user_id: str) -> list:
 def add_to_conversation(user_id: str, role: str, content: str):
     conv = get_conversation(user_id)
     conv.append({"role": role, "content": content})
-    if len(conv) > 20:
-        conversation_history[user_id] = conv[-20:]
+    if len(conv) > MAX_HISTORY:
+        conversation_history[user_id] = conv[-MAX_HISTORY:]
 
 def clear_conversation(user_id: str):
     conversation_history[user_id] = []
@@ -273,6 +287,11 @@ Explicit Accessed: {stats['explicit_accessed_users']}"""
     if content.lower() == "!gabe_clear":
         clear_conversation(user_id)
         await message.channel.send("*nods once* Copy that.")
+        return
+
+    user_stats = load_user_stats(user_id)
+    if get_daily_tokens(user_stats) >= DAILY_TOKEN_LIMIT:
+        await message.channel.send(DAILY_LIMIT_MESSAGE)
         return
 
     async with message.channel.typing():
