@@ -27,7 +27,7 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
-MODEL = "x-ai/grok-4.20"  # OpenRouter model format
+MODEL = "anthropic/claude-sonnet-4.6"  # OpenRouter model format
 MAX_TOKENS = 1500
 
 # Stats logging directory
