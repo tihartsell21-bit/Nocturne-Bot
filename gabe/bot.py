@@ -32,8 +32,8 @@ OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL = "anthropic/claude-opus-4.6"
-MAX_TOKENS = 1500
-DAILY_TOKEN_LIMIT = 250000
+MAX_TOKENS = 1000
+DAILY_TOKEN_LIMIT = 500000
 MAX_HISTORY = 40
 
 DAILY_LIMIT_MESSAGE = "Need to step out. Find me tomorrow."
